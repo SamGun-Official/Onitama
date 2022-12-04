@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_reset"
+        android:title="Reset" />
+    <item
+        android:id="@+id/menu_vs_player"
+        android:title="vs Player" />
+    <item
+        android:id="@+id/menu_vs_bot"
+        android:title="vs Bot" />
+</menu>
