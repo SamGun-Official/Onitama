@@ -9,7 +9,6 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
-
 class MainActivity : AppCompatActivity() {
     private lateinit var tiles: ArrayList<ImageButton>
 
@@ -24,11 +23,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var player1: Player
     private lateinit var player2: Player
 
-//    private var gameBoard: Board? = null
-//    private val colorRed: Color = Color(0xf5544e)
-//    private val colorBlue: Color = Color(0x4e96f5)
-//    private lateinit var nextCard: Card
-
     private lateinit var cards: Array<Card>
 
     private var isCardSelected: Boolean = false
@@ -37,6 +31,34 @@ class MainActivity : AppCompatActivity() {
     private lateinit var selectedPiece: Piece
     private lateinit var selectedCard: Card
     private var idxCard = -1
+
+    private fun startState() {
+        isCardSelected = false
+        isPieceSelected = false
+        idxCard = -1
+
+        Deck.init()
+        drawCards()
+        board = firstToMove()
+        initView()
+
+        player1.setBoard(board)
+        player2.setBoard(board)
+
+        val curPlayer = board.getCurrentPlayer()
+        val offPlayer = board.getOffPlayer()
+
+        println("===================================")
+        println("${curPlayer.getColorString()} (${curPlayer.isComputer()}): ${curPlayer.getCards()[0]} - ${curPlayer.getCards()[1]}")
+        println("${offPlayer.getColorString()} (${offPlayer.isComputer()}): ${offPlayer.getCards()[0]} - ${offPlayer.getCards()[1]}")
+        println(board.getBoardCard())
+
+        if(board.isComputerTurn()) {
+            compTurn()
+        }
+
+        reRenderView()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,11 +99,15 @@ class MainActivity : AppCompatActivity() {
         card_2_blue = findViewById(R.id.card_2_blue)
 
         Card.init()
-        Deck.init()
+//        Deck.init()
 
-        drawCards()
+        println("=============================================")
+        for(card in Card.allCards) {
+            println(card)
+        }
+        println("=============================================")
 
-        board = firstToMove()
+        startState()
 
         card_1_blue.setOnClickListener {
             reRenderView()
@@ -113,8 +139,6 @@ class MainActivity : AppCompatActivity() {
             }
             println("SELECTED: $selectedCard")
         }
-
-        initView()
 
         for (tile in tiles) {
             tile.setOnClickListener {
@@ -169,15 +193,11 @@ class MainActivity : AppCompatActivity() {
                                         isValid = true
                                         break
                                     }
-//                                    if(board.getBoard()[newY][newX] == null || board.getBoard()[newY][newX]!!.color == Piece.COLOR_RED) {
-//                                        tiles[newY * 5 + newX].setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.yellow)))
-//                                    }
                                 }
                             }
                             if(isValid) {
                                 play(from, to)
                                 reRenderView()
-    //                            switchCard()
                             } else {
                                 Toast.makeText(this, "GABOLEH JALAN SITU WOY", Toast.LENGTH_SHORT).show()
                             }
@@ -190,48 +210,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-//        gameBoard = Board(board!!)
-//        gameBoard!!.printBoard()
-
-        player1.setBoard(board)
-        player2.setBoard(board)
-
-        println("Player 1: " + player1.getDifficulty().toString() + " - Player 2: " + player2.getDifficulty())
-
-        if(board.isComputerTurn()) {
-            compTurn()
-        }
     }
 
     private fun highlight(from: Coordinate) {
-//        if(selectedCard == null) {
-//            println("Unhighlighted error: no card selected");
-//            return
-//        }
-//
-//        if(selectedPiece != null)
-//            unhighlightMoves();
-//
-//        selectedPawn = c;
-//        var from: Coordinate? = null
-//
-//        for(x in 0..4) {
-//            for(y in 0..4) {
-//                if(lblBoard[y][x] == selectedPawn) {
-//                    from = new Coordinate(x,y);
-//                    x=7;
-//                    break;
-//                }
-//            }
-//        }
-//        if(from == null) {
-//            System.out.println("Highlighted error: no pawn selected");
-//            selectedPawn = null;
-//            return;
-//        }
         reRenderView()
-
         for(pair in selectedCard.getMoves()) {
             val newX: Int = pair[0] * board.getCurrentPlayer().getColor() * -1 + from.getX()
             val newY: Int = pair[1] * board.getCurrentPlayer().getColor() + from.getY()
@@ -320,8 +302,6 @@ class MainActivity : AppCompatActivity() {
             card_1_blue.setImageResource(board.getOffPlayer().getCards()[0].getDrawable())
             card_2_blue.setImageResource(board.getOffPlayer().getCards()[1].getDrawable())
         }
-//        card_1_blue.setImageResource(player2.getCards()[0].getDrawable())
-//        card_2_blue.setImageResource(player2.getCards()[1].getDrawable())
     }
 
     fun compTurn() {
@@ -357,7 +337,8 @@ class MainActivity : AppCompatActivity() {
             } catch (ex: InterruptedException) {
                 Thread.currentThread().interrupt()
             } finally {
-                resetGame()
+//                resetGame()
+                startState()
             }
         }
     }
@@ -407,10 +388,10 @@ class MainActivity : AppCompatActivity() {
 //        for(i in 0 until cards.size) {
 //            println(cards[i].getName())
 //        }
-        println("===================================")
         val curPlayer = board.getCurrentPlayer()
         val offPlayer = board.getOffPlayer()
 
+        println("===================================")
         println("${curPlayer.getColorString()} (${curPlayer.isComputer()}): ${curPlayer.getCards()[0]} - ${curPlayer.getCards()[1]}")
         println("${offPlayer.getColorString()} (${offPlayer.isComputer()}): ${offPlayer.getCards()[0]} - ${offPlayer.getCards()[1]}")
         println(board.getBoardCard())
@@ -434,32 +415,6 @@ class MainActivity : AppCompatActivity() {
         board.setCurrentPlayer(curPlayer)
         board.setOffPlayer(offPlayer)
 
-//        if(curPlayer.isComputer()) {
-////            cards[0] = curPlayer.getCards()[0]
-////            cards[3] = curPlayer.getCards()[1]
-//            player1.setCard(0, curPlayer.getCards()[0])
-//            player1.setCard(1, curPlayer.getCards()[1])
-//        } else {
-////            cards[1] = curPlayer.getCards()[0]
-////            cards[4] = curPlayer.getCards()[1]
-//            player2.setCard(0, curPlayer.getCards()[0])
-//            player2.setCard(1, curPlayer.getCards()[1])
-//        }
-//        if(offPlayer.isComputer()) {
-////            cards[0] = offPlayer.getCards()[0]
-////            cards[3] = offPlayer.getCards()[1]
-//            player1.setCard(0, offPlayer.getCards()[0])
-//            player1.setCard(1, offPlayer.getCards()[1])
-//        } else {
-////            cards[1] = offPlayer.getCards()[0]
-////            cards[4] = offPlayer.getCards()[1]
-//            player2.setCard(0, offPlayer.getCards()[0])
-//            player2.setCard(1, offPlayer.getCards()[1])
-//        }
-//        cards[2] = selectedCard
-//        for(i in 0 until cards.size) {
-//            println(cards[i].getName())
-//        }
 //        board.swapCard(Card.getCardByName(selectedCard.getName())!!)
 //        updateCards()
         updateBoard()
@@ -481,7 +436,8 @@ class MainActivity : AppCompatActivity() {
 //                Deck.shuffle()
 //                drawCards()
 //                initView()
-                resetGame()
+//                resetGame()
+                startState()
             }
             R.id.menu_vs_player -> {
             }
