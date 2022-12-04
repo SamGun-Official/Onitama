@@ -84,6 +84,8 @@ class MainActivity : AppCompatActivity() {
         board = firstToMove()
 
         card_1_blue.setOnClickListener {
+            reRenderView()
+            isPieceSelected = false
             isCardSelected = true
             val curPlayer = board.getCurrentPlayer()
             val ofFPlayer = board.getOffPlayer()
@@ -97,6 +99,8 @@ class MainActivity : AppCompatActivity() {
             println("SELECTED: $selectedCard")
         }
         card_2_blue.setOnClickListener {
+            reRenderView()
+            isPieceSelected = false
             isCardSelected = true
             val curPlayer = board.getCurrentPlayer()
             val ofFPlayer = board.getOffPlayer()
@@ -156,9 +160,27 @@ class MainActivity : AppCompatActivity() {
                         println(from)
                         println(to)
                         if(to != null) {
-                            play(from, to)
-                            reRenderView()
-//                            switchCard()
+                            var isValid = false
+                            for(pair in selectedCard.getMoves()) {
+                                val newX: Int = pair[0] * board.getCurrentPlayer().getColor() * -1 + from.getX()
+                                val newY: Int = pair[1] * board.getCurrentPlayer().getColor() + from.getY()
+                                if(newX in 0..4 && newY in 0..4) {
+                                    if(newX == to.getX() && newY == to.getY()) {
+                                        isValid = true
+                                        break
+                                    }
+//                                    if(board.getBoard()[newY][newX] == null || board.getBoard()[newY][newX]!!.color == Piece.COLOR_RED) {
+//                                        tiles[newY * 5 + newX].setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.yellow)))
+//                                    }
+                                }
+                            }
+                            if(isValid) {
+                                play(from, to)
+                                reRenderView()
+    //                            switchCard()
+                            } else {
+                                Toast.makeText(this, "GABOLEH JALAN SITU WOY", Toast.LENGTH_SHORT).show()
+                            }
                         } else {
                             // ERROR
                         }
@@ -233,9 +255,6 @@ class MainActivity : AppCompatActivity() {
         cards = Deck.draw()
         player1 = Player(arrayOf(cards[0], cards[3]), Piece.COLOR_RED, Player.EASY)
         player2 = Player(arrayOf(cards[1], cards[4]), Piece.COLOR_BLUE)
-    }
-
-    private fun switchCards() {
     }
 
     private fun reRenderView() {
