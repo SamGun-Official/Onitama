@@ -1,6 +1,5 @@
 package com.ai_project.onitama
 
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.Menu
@@ -32,15 +31,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var selectedCard: Card
     private var idxCard = -1
 
+    private var isLiveVersus = false
+    private var currentColor: Int = Piece.COLOR_BLUE
+
     private fun startState() {
         isCardSelected = false
         isPieceSelected = false
         idxCard = -1
 
+        currentColor = Piece.COLOR_BLUE
+
         Deck.init()
         drawCards()
         board = firstToMove()
         initView()
+
+        if(isLiveVersus && board.getBoardCard().getColor() == Piece.COLOR_RED) {
+//            board.switchPlayer()
+            currentColor = Piece.COLOR_RED
+        }
 
         player1.setBoard(board)
         player2.setBoard(board)
@@ -53,8 +62,12 @@ class MainActivity : AppCompatActivity() {
         println("${offPlayer.getColorString()} (${offPlayer.isComputer()}): ${offPlayer.getCards()[0]} - ${offPlayer.getCards()[1]}")
         println(board.getBoardCard())
 
-        if(board.isComputerTurn()) {
-            compTurn()
+        if(!isLiveVersus) {
+            if(board.isComputerTurn()) {
+                compTurn()
+            }
+        } else {
+//            update()
         }
 
         reRenderView()
@@ -109,35 +122,65 @@ class MainActivity : AppCompatActivity() {
 
         startState()
 
-        card_1_blue.setOnClickListener {
-            reRenderView()
-            isPieceSelected = false
-            isCardSelected = true
-            val curPlayer = board.getCurrentPlayer()
-            val ofFPlayer = board.getOffPlayer()
-            if(!curPlayer.isComputer()) {
+        card_1_red.setOnClickListener {
+            println("CURRENT: $currentColor")
+            if(isLiveVersus && currentColor == Piece.COLOR_RED) {
+                reRenderView()
+                isPieceSelected = false
+                isCardSelected = true
+                val curPlayer = board.getCurrentPlayer()
                 selectedCard = curPlayer.getCards()[0]
                 idxCard = 0
-            } else {
-                selectedCard = ofFPlayer.getCards()[0]
-                idxCard = 3
+                println("SELECTED: $selectedCard")
             }
-            println("SELECTED: $selectedCard")
         }
-        card_2_blue.setOnClickListener {
-            reRenderView()
-            isPieceSelected = false
-            isCardSelected = true
-            val curPlayer = board.getCurrentPlayer()
-            val ofFPlayer = board.getOffPlayer()
-            if(!curPlayer.isComputer()) {
+        card_2_red.setOnClickListener {
+            println("CURRENT: $currentColor")
+            if(isLiveVersus && currentColor == Piece.COLOR_RED) {
+                reRenderView()
+                isPieceSelected = false
+                isCardSelected = true
+                val curPlayer = board.getCurrentPlayer()
                 selectedCard = curPlayer.getCards()[1]
                 idxCard = 1
-            } else {
-                selectedCard = ofFPlayer.getCards()[1]
-                idxCard = 4
+                println("SELECTED: $selectedCard")
             }
-            println("SELECTED: $selectedCard")
+        }
+        card_1_blue.setOnClickListener {
+            println("CURRENT: $currentColor")
+            if(currentColor == Piece.COLOR_BLUE) {
+                reRenderView()
+                isPieceSelected = false
+                isCardSelected = true
+                val curPlayer = board.getCurrentPlayer()
+                val ofFPlayer = board.getOffPlayer()
+                if(!curPlayer.isComputer()) {
+                    selectedCard = curPlayer.getCards()[0]
+                    idxCard = 0
+                } else {
+                    selectedCard = ofFPlayer.getCards()[0]
+                    idxCard = 3
+                }
+                println("SELECTED: $selectedCard")
+            }
+        }
+        card_2_blue.setOnClickListener {
+            println("CURRENT: $currentColor")
+            if(currentColor == Piece.COLOR_BLUE) {
+                reRenderView()
+                isPieceSelected = false
+                isCardSelected = true
+                val curPlayer = board.getCurrentPlayer()
+                val ofFPlayer = board.getOffPlayer()
+                if(!curPlayer.isComputer()) {
+                    selectedCard = curPlayer.getCards()[1]
+                    idxCard = 1
+                } else {
+                    selectedCard = ofFPlayer.getCards()[1]
+                    idxCard = 4
+                }
+                println("SELECTED: $selectedCard")
+            }
         }
 
         for (tile in tiles) {
@@ -147,7 +190,8 @@ class MainActivity : AppCompatActivity() {
                 val y: Int = (tag - 1) / 5
                 val tempBoard = board.getBoard()[y][x]
                 if(isCardSelected) {
-                    if(tempBoard != null && tempBoard.color == Piece.COLOR_BLUE) {
+//                    if(tempBoard != null && tempBoard.color == Piece.COLOR_BLUE) {
+                    if(tempBoard != null && tempBoard.color == currentColor) {
                         println("$x, $y")
                         if(!isPieceSelected) {
                             selectedPiece = tempBoard
@@ -218,7 +262,7 @@ class MainActivity : AppCompatActivity() {
             val newX: Int = pair[0] * board.getCurrentPlayer().getColor() * -1 + from.getX()
             val newY: Int = pair[1] * board.getCurrentPlayer().getColor() + from.getY()
             if(newX in 0..4 && newY in 0..4) {
-                if(board.getBoard()[newY][newX] == null || board.getBoard()[newY][newX]!!.color == Piece.COLOR_RED) {
+                if(board.getBoard()[newY][newX] == null || board.getBoard()[newY][newX]!!.color != currentColor) {
                     tiles[newY * 5 + newX].setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.yellow)))
                 }
             }
@@ -268,8 +312,10 @@ class MainActivity : AppCompatActivity() {
         switchCard()
         move(from, to)
         checkWin()
-        if (board.isComputerTurn() && !board.checkWin()) {
-            compTurn()
+        if(!isLiveVersus) {
+            if (board.isComputerTurn() && !board.checkWin()) {
+                compTurn()
+            }
         }
     }
 
@@ -331,7 +377,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkWin() {
         updateBoard()
         if (board.checkWin()) {
-            Toast.makeText(this, "Winner: " + board.getWinner()!!.getColorString(), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Winner: " + board.getWinner()!!.getColorString(), Toast.LENGTH_LONG).show()
             try {
                 Thread.sleep(1000)
             } catch (ex: InterruptedException) {
@@ -422,7 +468,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun switchPlayer() {
         board.switchPlayer()
-//        curPlayer.setText(gameBoard.getCurrentPlayer().getColorString())
+        if(isLiveVersus) {
+            if(currentColor == Piece.COLOR_RED) {
+                currentColor = Piece.COLOR_BLUE
+            } else {
+                currentColor = Piece.COLOR_RED
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -433,23 +485,17 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.menu_reset -> {
-//                Deck.shuffle()
-//                drawCards()
-//                initView()
-//                resetGame()
                 startState()
             }
             R.id.menu_vs_player -> {
+                isLiveVersus = true
+                startState()
             }
-            else -> {
+            R.id.menu_vs_bot -> {
+                isLiveVersus = false
+                startState()
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    fun resetGame() {
-        val intent = Intent(this, MainActivity::class.java)
-        finish()
-        startActivity(intent)
     }
 }
