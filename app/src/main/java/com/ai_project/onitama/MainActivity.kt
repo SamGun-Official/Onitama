@@ -1,4 +1,4 @@
-package com.example.onitama
+package com.ai_project.onitama
 
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -473,7 +473,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun resetGame() {
-        val intent = Intent(this,MainActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         finish()
         startActivity(intent)
     }

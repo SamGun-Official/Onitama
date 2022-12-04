@@ -1,4 +1,4 @@
-package com.example.onitama
+package com.ai_project.onitama
 
 data class Coordinate (
     var x: Int? = null,

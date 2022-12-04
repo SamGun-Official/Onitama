@@ -1,4 +1,4 @@
-package com.example.onitama
+package com.ai_project.onitama
 
 class Board {
     private val board = Array(5) {

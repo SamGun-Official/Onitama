@@ -1,4 +1,4 @@
-package com.example.onitama
+package com.ai_project.onitama
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

@@ -1,4 +1,4 @@
-package com.example.onitama
+package com.ai_project.onitama
 
 class Card {
     private var moves: Array<IntArray> = arrayOf(intArrayOf())
