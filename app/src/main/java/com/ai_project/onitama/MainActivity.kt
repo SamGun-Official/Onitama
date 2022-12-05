@@ -45,11 +45,18 @@ class MainActivity : AppCompatActivity() {
         Deck.init()
         drawCards()
         board = firstToMove()
-        initView()
+        refreshCard()
 
-        if(isLiveVersus && board.getBoardCard().getColor() == Piece.COLOR_RED) {
-//            board.switchPlayer()
-            currentColor = Piece.COLOR_RED
+        if(isLiveVersus) {
+            if(board.getBoardCard().getColor() == Piece.COLOR_RED) {
+                currentColor = Piece.COLOR_RED
+            }
+
+            if(currentColor == Piece.COLOR_BLUE) {
+                Toast.makeText(this, "First Turn: Blue", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "First Turn: Red", Toast.LENGTH_LONG).show()
+            }
         }
 
         player1.setBoard(board)
@@ -64,11 +71,15 @@ class MainActivity : AppCompatActivity() {
         println(board.getBoardCard())
 
         if(!isLiveVersus) {
+            if(board.getCurrentPlayer().getColor() == Piece.COLOR_BLUE) {
+                Toast.makeText(this, "First Turn: Blue", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "First Turn: Red", Toast.LENGTH_LONG).show()
+            }
+
             if(board.isComputerTurn()) {
                 compTurn()
             }
-        } else {
-//            update()
         }
 
         redrawBoard()
@@ -113,7 +124,6 @@ class MainActivity : AppCompatActivity() {
         card_2_blue = findViewById(R.id.card_2_blue)
 
         Card.init()
-//        Deck.init()
 
         println("=============================================")
         for(card in Card.allCards) {
@@ -192,7 +202,6 @@ class MainActivity : AppCompatActivity() {
                     val y: Int = (tag - 1) / 5
                     val tempBoard = board.getBoard()[y][x]
                     if(isCardSelected) {
-    //                    if(tempBoard != null && tempBoard.color == Piece.COLOR_BLUE) {
                         if(tempBoard != null && tempBoard.color == currentColor) {
                             println("$x, $y")
                             if(!isPieceSelected) {
@@ -245,7 +254,7 @@ class MainActivity : AppCompatActivity() {
                                     play(from, to)
                                     redrawBoard()
                                 } else {
-                                    Toast.makeText(this, "GABOLEH JALAN SITU WOY", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, "Cannot move that way!", Toast.LENGTH_SHORT).show()
                                 }
                             } else {
                                 // ERROR
@@ -336,7 +345,7 @@ class MainActivity : AppCompatActivity() {
         updateBoard()
     }
 
-    fun initView() {
+    fun refreshCard() {
         next_card.setImageResource(board.getBoardCard().getDrawable())
         next_card_enemy.setImageResource(board.getBoardCard().getDrawable())
         if(board.getCurrentPlayer().isComputer()) {
@@ -358,10 +367,10 @@ class MainActivity : AppCompatActivity() {
     fun compTurn() {
         board.computerTurn()
         update()
-        var cards = board.getOffPlayer().getCards()
+        val cardss = board.getOffPlayer().getCards()
         // search card
-        for (i in 0 until cards.size) {
-            if(board.getAiCard() == cards[i]) {
+        for (i in 0 until cardss.size) {
+            if(board.getAiCard() == cardss[i]) {
                 idxCard = i + 3
             }
         }
@@ -383,19 +392,13 @@ class MainActivity : AppCompatActivity() {
         updateBoard()
         if (board.checkWin()) {
             Toast.makeText(this, "Winner: " + board.getWinner()!!.getColorString(), Toast.LENGTH_LONG).show()
-//            try {
-//                Thread.sleep(1000)
-//            } catch (ex: InterruptedException) {
-//                Thread.currentThread().interrupt()
-//            } finally {
-//                startState()
-//            }
+            // Force reset using button
         }
     }
 
     private fun updateBoard() {
         redrawBoard()
-        initView()
+        refreshCard()
     }
 
     fun update() {
@@ -413,8 +416,8 @@ class MainActivity : AppCompatActivity() {
         println(board.getBoardCard())
 
         // simpan di temp untuk punya player
-        //idxCard untuk player : 0 berarti card yg idx ke-0, 1
-        //idxCard untuk ai : 3,4
+        // idxCard untuk player : 0 berarti card yg idx ke-0, 1
+        // idxCard untuk ai : 3,4
         if(idxCard < 2) {
             //cardnya player
             var tempCard = curPlayer.getCards()[idxCard]
