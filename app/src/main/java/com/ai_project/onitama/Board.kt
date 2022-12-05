@@ -176,6 +176,7 @@ class Board {
                                 if (depth == aiCurPlayer.getDifficulty()) {
                                     println("===============================================")
                                     printBoard(child.getBoard())
+                                    println("Difficulty: ${aiCurPlayer.getDifficulty()} | Depth: $depth")
                                     println("===============================================")
                                     aiCoord = arrayOf(from, to)
                                     aiCard = c

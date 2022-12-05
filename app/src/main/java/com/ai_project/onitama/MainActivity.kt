@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     private var isLiveVersus = false
     private var currentColor: Int = Piece.COLOR_BLUE
+    private var currentDifficulty: Int = Player.EASY
 
     private fun startState() {
         isCardSelected = false
@@ -279,7 +280,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun drawCards() {
         cards = Deck.draw()
-        player1 = Player(arrayOf(cards[0], cards[3]), Piece.COLOR_RED, Player.EASY)
+        player1 = Player(arrayOf(cards[0], cards[3]), Piece.COLOR_RED, currentDifficulty)
         player2 = Player(arrayOf(cards[1], cards[4]), Piece.COLOR_BLUE)
     }
 
@@ -487,13 +488,37 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_reset -> {
                 startState()
             }
+            R.id.menu_vs_bot -> {
+                isLiveVersus = false
+                startState()
+            }
             R.id.menu_vs_player -> {
                 isLiveVersus = true
                 startState()
             }
-            R.id.menu_vs_bot -> {
-                isLiveVersus = false
-                startState()
+            R.id.difficulty_easy -> {
+                if(isLiveVersus) {
+                    Toast.makeText(this@MainActivity, "Change the mode to versus computer first then the difficulty!", Toast.LENGTH_SHORT).show()
+                } else {
+                    currentDifficulty = Player.EASY
+                    startState()
+                }
+            }
+            R.id.difficulty_medium -> {
+                if(isLiveVersus) {
+                    Toast.makeText(this@MainActivity, "Change the mode to versus computer first then the difficulty!", Toast.LENGTH_SHORT).show()
+                } else {
+                    currentDifficulty = Player.MEDIUM
+                    startState()
+                }
+            }
+            R.id.difficulty_hard -> {
+                if(isLiveVersus) {
+                    Toast.makeText(this@MainActivity, "Change the mode to versus computer first then the difficulty!", Toast.LENGTH_SHORT).show()
+                } else {
+                    currentDifficulty = Player.HARD
+                    startState()
+                }
             }
         }
         return super.onOptionsItemSelected(item)

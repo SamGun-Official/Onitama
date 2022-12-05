@@ -1,13 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/menu_reset"
-        android:title="Reset" />
+        android:title="Reset"
+        app:showAsAction="always"></item>
     <item
-        android:id="@+id/menu_vs_player"
-        android:title="vs Player" />
+        android:id="@+id/menu_mode"
+        android:title="Mode">
+        <menu >
+            <item
+                android:id="@+id/menu_vs_bot"
+                android:title="Player vs Computer" />
+            <item
+                android:id="@+id/menu_vs_player"
+                android:title="Player vs Player" />
+        </menu>
+    </item>
     <item
-        android:id="@+id/menu_vs_bot"
-        android:title="vs Bot" />
+        android:id="@+id/menu_difficulty"
+        android:title="Difficulty" >
+        <menu >
+            <item
+                android:id="@+id/difficulty_easy"
+                android:title="Easy" />
+            <item
+                android:id="@+id/difficulty_medium"
+                android:title="Medium" />
+            <item
+                android:id="@+id/difficulty_hard"
+                android:title="Hard" />
+        </menu>
+    </item>
 </menu>
