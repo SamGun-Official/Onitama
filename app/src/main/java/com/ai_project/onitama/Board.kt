@@ -48,44 +48,6 @@ class Board {
         }
     }
 
-    fun setBoardCard(card: Card) {
-        boardCard = card
-    }
-
-    fun getBoardCard(): Card {
-        return boardCard
-    }
-
-    fun getCurrentPlayer(): Player {
-        return curPlayer
-    }
-
-    fun getOffPlayer(): Player {
-        return offPlayer
-    }
-
-    fun setCurrentPlayer(player: Player) {
-        this.curPlayer = player
-    }
-
-    fun setOffPlayer(player: Player) {
-        this.offPlayer = player
-    }
-
-    fun getAiCard() : Card {
-        return aiCard!!
-    }
-
-    fun switchPlayer() {
-        val temp = curPlayer
-        curPlayer = Player(offPlayer)
-        offPlayer = Player(temp)
-    }
-
-    fun isComputerTurn(): Boolean {
-        return curPlayer.isComputer()
-    }
-
     fun computerTurn() {
         if(isComputerTurn()) {
             alphabeta()
@@ -232,38 +194,6 @@ class Board {
         }
     }
 
-    fun getBoard(): Array<Array<Piece?>> {
-        return board
-    }
-
-    fun getCardsOfPlayerColor(color: Int): Array<Card> {
-        return getPlayerOfColor(color).getCards()
-    }
-
-    fun getPiece(x: Int, y: Int): Piece? {
-        return board[y][x]
-    }
-
-    fun getPiecesOfPlayer(p: Player): Array<Piece?> {
-        return getPiecesOfColor(p.getColor())
-    }
-
-    fun getPiecesOfColor(color: Int): Array<Piece?> {
-        var index = 0
-        val pieces = arrayOfNulls<Piece>(5)
-        for(i in 0..24) {
-            if(getPiece(i % 5, i / 5) != null && getPiece(i % 5, i / 5)!!.color == color) {
-                val tempPiece = getPiece(i % 5, i / 5)!!
-                pieces[index++] = Piece(tempPiece.coordinate, tempPiece.color, tempPiece.isKing)
-            }
-        }
-        return pieces
-    }
-
-    fun getPiece(c: Coordinate): Piece? {
-        return getPiece(c.getX(), c.getY())
-    }
-
     fun exchange(c: Card): Card {
         val temp = boardCard
         boardCard = c
@@ -343,10 +273,6 @@ class Board {
         }
     }
 
-    fun getPlayerOfColor(color: Int): Player {
-        return if(curPlayer.getColor() == color) curPlayer else offPlayer
-    }
-
     fun swapCard(handCard: Card) {
         for(i in 0..1) {
             if(curPlayer.getCards().get(i).equals(handCard)) {
@@ -360,6 +286,80 @@ class Board {
                 break
             }
         }
+    }
+
+    fun setBoardCard(card: Card) {
+        boardCard = card
+    }
+
+    fun getBoardCard(): Card {
+        return boardCard
+    }
+
+    fun getCurrentPlayer(): Player {
+        return curPlayer
+    }
+
+    fun getOffPlayer(): Player {
+        return offPlayer
+    }
+
+    fun setCurrentPlayer(player: Player) {
+        this.curPlayer = player
+    }
+
+    fun setOffPlayer(player: Player) {
+        this.offPlayer = player
+    }
+
+    fun getAiCard() : Card {
+        return aiCard!!
+    }
+
+    fun switchPlayer() {
+        val temp = curPlayer
+        curPlayer = Player(offPlayer)
+        offPlayer = Player(temp)
+    }
+
+    fun isComputerTurn(): Boolean {
+        return curPlayer.isComputer()
+    }
+
+    fun getBoard(): Array<Array<Piece?>> {
+        return board
+    }
+
+    fun getCardsOfPlayerColor(color: Int): Array<Card> {
+        return getPlayerOfColor(color).getCards()
+    }
+
+    fun getPiece(x: Int, y: Int): Piece? {
+        return board[y][x]
+    }
+
+    fun getPiecesOfPlayer(p: Player): Array<Piece?> {
+        return getPiecesOfColor(p.getColor())
+    }
+
+    fun getPiecesOfColor(color: Int): Array<Piece?> {
+        var index = 0
+        val pieces = arrayOfNulls<Piece>(5)
+        for(i in 0..24) {
+            if(getPiece(i % 5, i / 5) != null && getPiece(i % 5, i / 5)!!.color == color) {
+                val tempPiece = getPiece(i % 5, i / 5)!!
+                pieces[index++] = Piece(tempPiece.coordinate, tempPiece.color, tempPiece.isKing)
+            }
+        }
+        return pieces
+    }
+
+    fun getPiece(c: Coordinate): Piece? {
+        return getPiece(c.getX(), c.getY())
+    }
+
+    fun getPlayerOfColor(color: Int): Player {
+        return if(curPlayer.getColor() == color) curPlayer else offPlayer
     }
 
     fun copyBoard(): Board {
