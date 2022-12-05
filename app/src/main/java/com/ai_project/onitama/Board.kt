@@ -152,7 +152,6 @@ class Board {
         if (maximize) {
             var v = Int.MIN_VALUE
             for (c in node.getCardsOfPlayerColor(aiCurPlayer.getColor())) {
-//                println(c.getName())
                 for (p in node.getPiecesOfColor(aiCurPlayer.getColor())) {
                     if (p == null) continue
                     for (move in c.getMoves()) {
@@ -166,9 +165,8 @@ class Board {
                         child.swapCard(c)
                         child.switchPlayer()
 
-//                        printBoard(child.getBoard())
+                        //printBoard(child.getBoard())
                         val retVal = alphabeta(child, depth - 1, alpha, beta, false)
-//                        println(retVal)
 
                         if (v < retVal) {
                             v = retVal
@@ -182,7 +180,9 @@ class Board {
                                     aiCard = c
                                 }
                                 alpha = v
-                                if (beta <= alpha) return v
+                                if (beta <= alpha) {
+                                    return v
+                                }
                             }
                         }
                     }
@@ -207,15 +207,16 @@ class Board {
                         child.swapCard(c)
                         child.switchPlayer()
 
-//                        printBoard(child.getBoard())
+                        //printBoard(child.getBoard())
                         val retVal = alphabeta(child, depth - 1, alpha, beta, true)
-//                        println(retVal)
 
                         if (v > retVal) {
                             v = retVal
                             if (beta > v) {
                                 beta = v
-                                if (beta <= alpha) return v
+                                if (beta <= alpha) {
+                                    return v
+                                }
                             }
                         }
                     }
@@ -244,11 +245,6 @@ class Board {
     fun getPiecesOfColor(color: Int): Array<Piece?> {
         var index = 0
         val pieces = arrayOfNulls<Piece>(5)
-//        for (i in 0..24) if (getPiece(i % 5, i / 5) != null && getPiece(
-//                i % 5,
-//                i / 5
-//            )!!.color == color
-//        ) pieces[index++] = Piece(getPiece(i % 5, i / 5))
         for (i in 0..24) {
             if(getPiece(i % 5, i / 5) != null && getPiece(i % 5, i / 5)!!.color == color) {
                 val tempPiece = getPiece(i % 5, i / 5)!!
@@ -263,7 +259,7 @@ class Board {
     }
 
     fun exchange(c: Card): Card {
-        val temp = boardCard!!
+        val temp = boardCard
         boardCard = c
         return temp
     }
@@ -293,9 +289,8 @@ class Board {
         }
         val tempPiece = getPiece(from)!!
         board[to.getY()][to.getX()] = Piece(to, tempPiece.color, tempPiece.isKing)
-//        getPiece(to.getX(), to.getY())!!.coordinate.setCoordinate(to.getX(), to.getY())
         board[from.getY()][from.getX()] = null
-//        printBoard()
+        //printBoard()
     }
 
     fun printBoard() {

@@ -85,7 +85,7 @@ class Card {
         return name
     }
 
-//    fun equals(card: Card): Boolean {
-//        return card.getName() == name
-//    }
+    fun equals(card: Card): Boolean {
+        return card.getName() == name
+    }
 }

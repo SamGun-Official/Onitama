@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
 //            update()
         }
 
-        reRenderView()
+        redrawBoard()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         card_1_red.setOnClickListener {
             println("CURRENT: $currentColor")
             if(isLiveVersus && currentColor == Piece.COLOR_RED) {
-                reRenderView()
+                redrawBoard()
                 isPieceSelected = false
                 isCardSelected = true
                 val curPlayer = board.getCurrentPlayer()
@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
         card_2_red.setOnClickListener {
             println("CURRENT: $currentColor")
             if(isLiveVersus && currentColor == Piece.COLOR_RED) {
-                reRenderView()
+                redrawBoard()
                 isPieceSelected = false
                 isCardSelected = true
                 val curPlayer = board.getCurrentPlayer()
@@ -150,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         card_1_blue.setOnClickListener {
             println("CURRENT: $currentColor")
             if(currentColor == Piece.COLOR_BLUE) {
-                reRenderView()
+                redrawBoard()
                 isPieceSelected = false
                 isCardSelected = true
                 val curPlayer = board.getCurrentPlayer()
@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity() {
         card_2_blue.setOnClickListener {
             println("CURRENT: $currentColor")
             if(currentColor == Piece.COLOR_BLUE) {
-                reRenderView()
+                redrawBoard()
                 isPieceSelected = false
                 isCardSelected = true
                 val curPlayer = board.getCurrentPlayer()
@@ -186,79 +186,83 @@ class MainActivity : AppCompatActivity() {
 
         for (tile in tiles) {
             tile.setOnClickListener {
-                val tag: Int = tile.tag.toString().toInt()
-                val x: Int = (tag - 1) % 5
-                val y: Int = (tag - 1) / 5
-                val tempBoard = board.getBoard()[y][x]
-                if(isCardSelected) {
-//                    if(tempBoard != null && tempBoard.color == Piece.COLOR_BLUE) {
-                    if(tempBoard != null && tempBoard.color == currentColor) {
-                        println("$x, $y")
-                        if(!isPieceSelected) {
-                            selectedPiece = tempBoard
-                            isPieceSelected = true
-                            val from: Coordinate = selectedPiece.coordinate
-                            highlight(from)
-                        } else {
-                            if(selectedPiece.coordinate.x == x && selectedPiece.coordinate.y == y) {
-                                isPieceSelected = false
-                                reRenderView()
-                            } else {
+                if(!board.checkWin()) {
+                    val tag: Int = tile.tag.toString().toInt()
+                    val x: Int = (tag - 1) % 5
+                    val y: Int = (tag - 1) / 5
+                    val tempBoard = board.getBoard()[y][x]
+                    if(isCardSelected) {
+    //                    if(tempBoard != null && tempBoard.color == Piece.COLOR_BLUE) {
+                        if(tempBoard != null && tempBoard.color == currentColor) {
+                            println("$x, $y")
+                            if(!isPieceSelected) {
                                 selectedPiece = tempBoard
+                                isPieceSelected = true
                                 val from: Coordinate = selectedPiece.coordinate
                                 highlight(from)
-                            }
-                        }
-                    } else if(isPieceSelected) {
-                        println("$x, $y")
-                        val from: Coordinate = selectedPiece.coordinate
-                        var to: Coordinate? = null
-                        var esc = false
-                        for(i in 0..4) {
-                            for(j in 0..4) {
-                                if(j == x && i == y) {
-                                    to = Coordinate(x, y)
-                                    esc = true
-                                    break
+                            } else {
+                                if(selectedPiece.coordinate.x == x && selectedPiece.coordinate.y == y) {
+                                    isPieceSelected = false
+                                    redrawBoard()
+                                } else {
+                                    selectedPiece = tempBoard
+                                    val from: Coordinate = selectedPiece.coordinate
+                                    highlight(from)
                                 }
                             }
-                            if(esc) {
-                                break
-                            }
-                        }
-                        println(from)
-                        println(to)
-                        if(to != null) {
-                            var isValid = false
-                            for(pair in selectedCard.getMoves()) {
-                                val newX: Int = pair[0] * board.getCurrentPlayer().getColor() * -1 + from.getX()
-                                val newY: Int = pair[1] * board.getCurrentPlayer().getColor() + from.getY()
-                                if(newX in 0..4 && newY in 0..4) {
-                                    if(newX == to.getX() && newY == to.getY()) {
-                                        isValid = true
+                        } else if(isPieceSelected) {
+                            println("$x, $y")
+                            val from: Coordinate = selectedPiece.coordinate
+                            var to: Coordinate? = null
+                            var esc = false
+                            for(i in 0..4) {
+                                for(j in 0..4) {
+                                    if(j == x && i == y) {
+                                        to = Coordinate(x, y)
+                                        esc = true
                                         break
                                     }
                                 }
+                                if(esc) {
+                                    break
+                                }
                             }
-                            if(isValid) {
-                                play(from, to)
-                                reRenderView()
+                            println(from)
+                            println(to)
+                            if(to != null) {
+                                var isValid = false
+                                for(pair in selectedCard.getMoves()) {
+                                    val newX: Int = pair[0] * board.getCurrentPlayer().getColor() * -1 + from.getX()
+                                    val newY: Int = pair[1] * board.getCurrentPlayer().getColor() + from.getY()
+                                    if(newX in 0..4 && newY in 0..4) {
+                                        if(newX == to.getX() && newY == to.getY()) {
+                                            isValid = true
+                                            break
+                                        }
+                                    }
+                                }
+                                if(isValid) {
+                                    play(from, to)
+                                    redrawBoard()
+                                } else {
+                                    Toast.makeText(this, "GABOLEH JALAN SITU WOY", Toast.LENGTH_SHORT).show()
+                                }
                             } else {
-                                Toast.makeText(this, "GABOLEH JALAN SITU WOY", Toast.LENGTH_SHORT).show()
+                                // ERROR
                             }
                         } else {
                             // ERROR
                         }
-                    } else {
-                        // ERROR
                     }
+                } else {
+                    checkWin()
                 }
             }
         }
     }
 
     private fun highlight(from: Coordinate) {
-        reRenderView()
+        redrawBoard()
         for(pair in selectedCard.getMoves()) {
             val newX: Int = pair[0] * board.getCurrentPlayer().getColor() * -1 + from.getX()
             val newY: Int = pair[1] * board.getCurrentPlayer().getColor() + from.getY()
@@ -284,7 +288,7 @@ class MainActivity : AppCompatActivity() {
         player2 = Player(arrayOf(cards[1], cards[4]), Piece.COLOR_BLUE)
     }
 
-    private fun reRenderView() {
+    private fun redrawBoard() {
         for(k in 0 until tiles.size) {
             tiles[k].setImageResource(R.color.transparent)
             tiles[k].setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.light_yellow)))
@@ -379,62 +383,27 @@ class MainActivity : AppCompatActivity() {
         updateBoard()
         if (board.checkWin()) {
             Toast.makeText(this, "Winner: " + board.getWinner()!!.getColorString(), Toast.LENGTH_LONG).show()
-            try {
-                Thread.sleep(1000)
-            } catch (ex: InterruptedException) {
-                Thread.currentThread().interrupt()
-            } finally {
-//                resetGame()
-                startState()
-            }
+//            try {
+//                Thread.sleep(1000)
+//            } catch (ex: InterruptedException) {
+//                Thread.currentThread().interrupt()
+//            } finally {
+//                startState()
+//            }
         }
     }
 
     private fun updateBoard() {
-        reRenderView()
+        redrawBoard()
         initView()
-//        board.printBoard()
-//        for (y in 0..4) for (x in 0..4) if (gameBoard!!.getPiece(x, y) == null) {
-//            lblBoard.get(y).get(x).setText("")
-//            lblBoard.get(y).get(x).setBackground(Color.WHITE)
-//        } else {
-//            if (gameBoard.getPiece(x, y)!!.isKing) lblBoard.get(y).get(x)
-//                .setText("K") else lblBoard.get(y).get(x).setText("P")
-//            if (gameBoard.getPiece(x, y)!!.color == Board.red) lblBoard.get(y).get(x)
-//                .setBackground(colorRed) else lblBoard.get(y).get(x).setBackground(colorBlue)
-//        }
     }
 
     fun update() {
-        //updatePlayer
         switchPlayer()
-
-        //update Cards
-//        if (lastCardHighlighted != null) switchCard() else updateCards()
-
-        //update Board
         updateBoard()
     }
 
-    private fun updateCards() {
-//        var c: Array<Card> = board.getPlayerOfColor(Piece.COLOR_RED).getCards()
-//        red1.set(CardGUI(c[0], Board.red))
-//        red2.set(CardGUI(c[1], Board.red))
-//        c = gameBoard.getPlayerOfColor(Board.blue).getCards()
-//        blue1.set(CardGUI(c[0], Board.blue))
-//        blue2.set(CardGUI(c[1], Board.blue))
-//        tableCard.set(CardGUI(gameBoard.getBoardCard(), Board.blue))
-    }
-
     private fun switchCard() {
-//        if (selectedCard == null) {
-//            println("ERROR SWITCHING CARDS!")
-//        }
-//        val temp = CardGUI(lastCardHighlighted as CardGUI?)
-//        selectedCard = null
-//        for(i in 0 until cards.size) {
-//            println(cards[i].getName())
-//        }
         val curPlayer = board.getCurrentPlayer()
         val offPlayer = board.getOffPlayer()
 
@@ -462,8 +431,7 @@ class MainActivity : AppCompatActivity() {
         board.setCurrentPlayer(curPlayer)
         board.setOffPlayer(offPlayer)
 
-//        board.swapCard(Card.getCardByName(selectedCard.getName())!!)
-//        updateCards()
+        //board.swapCard(Card.getCardByName(selectedCard.getName())!!)
         updateBoard()
     }
 
@@ -489,17 +457,30 @@ class MainActivity : AppCompatActivity() {
                 startState()
             }
             R.id.menu_vs_bot -> {
-                isLiveVersus = false
-                startState()
+                if(!isLiveVersus) {
+                    Toast.makeText(this@MainActivity, "You're already battling an AI!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@MainActivity, "Changing mode to PLAYER VS COMPUTER!", Toast.LENGTH_SHORT).show()
+                    isLiveVersus = false
+                    startState()
+                }
             }
             R.id.menu_vs_player -> {
-                isLiveVersus = true
-                startState()
+                if(isLiveVersus) {
+                    Toast.makeText(this@MainActivity, "You're already battling another PLAYER!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@MainActivity, "Changing mode to PLAYER VS PLAYER!", Toast.LENGTH_SHORT).show()
+                    isLiveVersus = true
+                    startState()
+                }
             }
             R.id.difficulty_easy -> {
                 if(isLiveVersus) {
                     Toast.makeText(this@MainActivity, "Change the mode to versus computer first then the difficulty!", Toast.LENGTH_SHORT).show()
+                } else if(currentDifficulty == Player.EASY) {
+                    Toast.makeText(this@MainActivity, "You're already battling EASY AI!", Toast.LENGTH_SHORT).show()
                 } else {
+                    Toast.makeText(this@MainActivity, "Changing difficulty to EASY!", Toast.LENGTH_SHORT).show()
                     currentDifficulty = Player.EASY
                     startState()
                 }
@@ -507,7 +488,10 @@ class MainActivity : AppCompatActivity() {
             R.id.difficulty_medium -> {
                 if(isLiveVersus) {
                     Toast.makeText(this@MainActivity, "Change the mode to versus computer first then the difficulty!", Toast.LENGTH_SHORT).show()
+                } else if(currentDifficulty == Player.MEDIUM) {
+                    Toast.makeText(this@MainActivity, "You're already battling MEDIUM AI!", Toast.LENGTH_SHORT).show()
                 } else {
+                    Toast.makeText(this@MainActivity, "Changing difficulty to MEDIUM!", Toast.LENGTH_SHORT).show()
                     currentDifficulty = Player.MEDIUM
                     startState()
                 }
@@ -515,7 +499,10 @@ class MainActivity : AppCompatActivity() {
             R.id.difficulty_hard -> {
                 if(isLiveVersus) {
                     Toast.makeText(this@MainActivity, "Change the mode to versus computer first then the difficulty!", Toast.LENGTH_SHORT).show()
+                } else if(currentDifficulty == Player.HARD) {
+                    Toast.makeText(this@MainActivity, "You're already battling HARD AI!", Toast.LENGTH_SHORT).show()
                 } else {
+                    Toast.makeText(this@MainActivity, "Changing difficulty to HARD!", Toast.LENGTH_SHORT).show()
                     currentDifficulty = Player.HARD
                     startState()
                 }
